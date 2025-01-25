@@ -1,19 +1,17 @@
 package com.stefan.egovernmentapp.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Builder
 @Data
@@ -21,15 +19,18 @@ import java.util.List;
 @NoArgsConstructor
 
 @Entity
-@Table(name = "complaint_types")
-public class ComplaintType {
+@Table(name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String typeName;
-    private String description;
+    private Integer id;
+    private String emailAddress;
+    private String password;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "complaintType", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Complaint> complaints;
+    @Column(name = "is_using_2fa")
+    private Boolean isUsing2FA;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+    private String secretKey;
 }

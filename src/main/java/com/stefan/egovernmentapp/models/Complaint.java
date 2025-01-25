@@ -1,6 +1,13 @@
 package com.stefan.egovernmentapp.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,14 +26,10 @@ public class Complaint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @ManyToOne
-    @JoinColumn(name = "resident_id", referencedColumnName = "id")
-    private Resident resident;
     @Column(name = "information")
     private String information;
     @ManyToOne
-    @JoinColumn(name = "complaint_type_id", referencedColumnName = "id")
+    @JoinColumn(name = "complaint_type_id")
     private ComplaintType complaintType;
     @Column(name = "added_date")
     private Timestamp addedDate;
