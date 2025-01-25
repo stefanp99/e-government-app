@@ -1,5 +1,6 @@
 package com.stefan.egovernmentapp.services;
 
+import com.stefan.egovernmentapp.models.Resident;
 import com.stefan.egovernmentapp.models.User;
 import com.stefan.egovernmentapp.models.requests.LoginRequest;
 import com.stefan.egovernmentapp.models.requests.RegisterRequest;
@@ -29,6 +30,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class AuthService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final ResidentService residentService;
     @Value("${authenticator.app.name}")
     private String issuer;
 
@@ -41,10 +43,17 @@ public class AuthService {
                     .role(registerRequest.getRole())
                     .build();
             if (registerRequest.getIsUsing2FA()) {
-                return add2FAFromUser(newUser);
+                String otpAuthURL = add2FAFromUser(newUser);
+                Resident resident = residentService.createResidentIfRoleIsResident(registerRequest.getEmailAddress());
+                return resident == null ?
+                        ResponseEntity.status(CREATED).body(format("OTP URL: %s", otpAuthURL)) :
+                        ResponseEntity.status(CREATED).body(format("Resident created. OTP URL: %s", otpAuthURL));
             }
             userRepository.save(newUser);
-            return ResponseEntity.status(CREATED).body(format("User added successfully with ID: %d", newUser.getId()));
+            Resident resident = residentService.createResidentIfRoleIsResident(registerRequest.getEmailAddress());
+            return resident == null ?
+                    ResponseEntity.status(CREATED).body(format("User added successfully with ID: %d", newUser.getId())) :
+                    ResponseEntity.status(CREATED).body(format("User added successfully with ID: %d and resident with ID %d ", newUser.getId(), resident.getId()));
         }
         return ResponseEntity.status(FORBIDDEN)
                 .body(format("User already exists with email address: %s", registerRequest.getEmailAddress()));
@@ -69,7 +78,7 @@ public class AuthService {
             if (loggedUser.getIsUsing2FA())
                 return ResponseEntity.status(UNAUTHORIZED)
                         .body("User already has 2FA");
-            return add2FAFromUser(loggedUser);
+            return ResponseEntity.ok(add2FAFromUser(loggedUser));
         }
         return ResponseEntity.status(NOT_FOUND)
                 .body("User not found");
@@ -87,7 +96,7 @@ public class AuthService {
                 .body("User not found");
     }
 
-    private ResponseEntity<String> add2FAFromUser(User user) {
+    private String add2FAFromUser(User user) {
         GoogleAuthenticatorKey secretKey = generateSecretKey();
         String otpAuthURL = GoogleAuthenticatorQRGenerator
                 .getOtpAuthURL(issuer, user.getEmailAddress(), secretKey);
@@ -95,7 +104,7 @@ public class AuthService {
         user.setSecretKey(secretKey.getKey());
         user.setIsUsing2FA(true);
         userRepository.save(user);
-        return ResponseEntity.ok(format("User added successfully using totp: %s", otpAuthURL));
+        return format("User added successfully using totp: %s", otpAuthURL);
     }
 
     private ResponseEntity<String> remove2FAFromUser(User user) {

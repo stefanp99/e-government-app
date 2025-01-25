@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 
 @RestController
-@RequestMapping("complaints")
-public class ComplaintController {
-
+@RequestMapping("residents")
+public class ResidentController {
 }

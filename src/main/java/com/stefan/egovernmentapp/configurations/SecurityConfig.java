@@ -14,6 +14,9 @@ import static com.stefan.egovernmentapp.models.Role.ADMIN;
 import static com.stefan.egovernmentapp.models.Role.EMPLOYEE;
 import static com.stefan.egovernmentapp.models.Role.RESIDENT;
 import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 
 @Configuration
@@ -27,6 +30,9 @@ public class SecurityConfig {
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
                         .requestMatchers(PUT, "/auth/2fa").hasAnyRole(ADMIN.toString(), RESIDENT.toString(), EMPLOYEE.toString())
                         .requestMatchers(DELETE, "/auth/2fa").hasAnyRole(ADMIN.toString(), RESIDENT.toString(), EMPLOYEE.toString())
+                        .requestMatchers(GET, "/pending-residents-requests").hasAnyRole(ADMIN.toString(), EMPLOYEE.toString())
+                        .requestMatchers(PATCH, "/pending-residents-requests/**").hasAnyRole(ADMIN.toString(), EMPLOYEE.toString())
+                        .requestMatchers(POST, "/pending-residents-requests").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
