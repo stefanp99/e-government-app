@@ -1,5 +1,6 @@
 package com.stefan.egovernmentapp.controllers;
 
+import com.stefan.egovernmentapp.models.Role;
 import com.stefan.egovernmentapp.models.requests.LoginRequest;
 import com.stefan.egovernmentapp.models.requests.RegisterRequest;
 import com.stefan.egovernmentapp.services.AuthService;
@@ -19,6 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("auth")
 public class AuthController {
     private final AuthService authService;
+
+    @PostMapping("register-resident")
+    public ResponseEntity<String> registerResident(@RequestBody RegisterRequest registerRequest) {
+        registerRequest.setRole(Role.RESIDENT);
+        return authService.registerUser(registerRequest);
+    }
 
     @PostMapping("register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {

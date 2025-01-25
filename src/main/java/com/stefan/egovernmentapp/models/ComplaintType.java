@@ -1,19 +1,14 @@
 package com.stefan.egovernmentapp.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Builder
 @Data
@@ -25,11 +20,7 @@ import java.util.List;
 public class ComplaintType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String typeName;
     private String description;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "complaintType", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Complaint> complaints;
 }

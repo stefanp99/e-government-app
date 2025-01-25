@@ -27,7 +27,8 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        .requestMatchers("/auth/register-resident", "/auth/login").permitAll()
+                        .requestMatchers(POST, "/auth/register").hasAnyRole(ADMIN.toString(), EMPLOYEE.toString())
                         .requestMatchers(PUT, "/auth/2fa").hasAnyRole(ADMIN.toString(), RESIDENT.toString(), EMPLOYEE.toString())
                         .requestMatchers(DELETE, "/auth/2fa").hasAnyRole(ADMIN.toString(), RESIDENT.toString(), EMPLOYEE.toString())
                         .requestMatchers(GET, "/pending-residents-requests").hasAnyRole(ADMIN.toString(), EMPLOYEE.toString())
