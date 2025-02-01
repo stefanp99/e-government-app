@@ -39,6 +39,8 @@ public class AuthService {
         if (isResident)
             registerRequest.setRole(Role.RESIDENT);
         if (userRepository.findByEmailAddress(registerRequest.getEmailAddress()).isEmpty()) {
+            if (isResident && !registerRequest.getRole().equals(Role.RESIDENT))
+                registerRequest.setRole(Role.RESIDENT);
             User newUser = User.builder()
                     .emailAddress(registerRequest.getEmailAddress())
                     .isUsing2FA(registerRequest.getIsUsing2FA())
