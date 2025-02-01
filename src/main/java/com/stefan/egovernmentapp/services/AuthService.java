@@ -1,6 +1,7 @@
 package com.stefan.egovernmentapp.services;
 
 import com.stefan.egovernmentapp.models.Resident;
+import com.stefan.egovernmentapp.models.Role;
 import com.stefan.egovernmentapp.models.User;
 import com.stefan.egovernmentapp.models.requests.LoginRequest;
 import com.stefan.egovernmentapp.models.requests.RegisterRequest;
@@ -34,7 +35,9 @@ public class AuthService {
     @Value("${authenticator.app.name}")
     private String issuer;
 
-    public ResponseEntity<String> registerUser(RegisterRequest registerRequest) {
+    public ResponseEntity<String> registerUser(RegisterRequest registerRequest, boolean isResident) {
+        if (isResident)
+            registerRequest.setRole(Role.RESIDENT);
         if (userRepository.findByEmailAddress(registerRequest.getEmailAddress()).isEmpty()) {
             User newUser = User.builder()
                     .emailAddress(registerRequest.getEmailAddress())

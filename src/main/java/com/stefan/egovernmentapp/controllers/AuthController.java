@@ -1,6 +1,5 @@
 package com.stefan.egovernmentapp.controllers;
 
-import com.stefan.egovernmentapp.models.Role;
 import com.stefan.egovernmentapp.models.requests.LoginRequest;
 import com.stefan.egovernmentapp.models.requests.RegisterRequest;
 import com.stefan.egovernmentapp.services.AuthService;
@@ -23,13 +22,12 @@ public class AuthController {
 
     @PostMapping("register-resident")
     public ResponseEntity<String> registerResident(@RequestBody RegisterRequest registerRequest) {
-        registerRequest.setRole(Role.RESIDENT);
-        return authService.registerUser(registerRequest);
+        return authService.registerUser(registerRequest, true);
     }
 
     @PostMapping("register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
-        return authService.registerUser(registerRequest);
+        return authService.registerUser(registerRequest, false);
     }
 
     @PostMapping("login")
