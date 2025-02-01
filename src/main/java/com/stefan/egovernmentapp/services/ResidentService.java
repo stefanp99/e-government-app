@@ -42,7 +42,6 @@ public class ResidentService {
                                     .build());
                 }
             }
-            return null;
         }
         return null;
     }
