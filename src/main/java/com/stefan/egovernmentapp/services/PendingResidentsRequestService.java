@@ -29,7 +29,8 @@ public class PendingResidentsRequestService {
     }
 
     public ResponseEntity<String> addPendingResidentsRequests(PendingResidentsRequest pendingResidentsRequest) {
-        if (!residentExistsByPersonalIdNumber(pendingResidentsRequest.getPersonalIdNumber())) {
+        if (!residentExistsByPersonalIdNumber(pendingResidentsRequest.getPersonalIdNumber()) &&
+                !requestExistsByPersonalIdNumber(pendingResidentsRequest.getPersonalIdNumber())) {
             pendingResidentsRequest.setRequestStatus(PENDING);
             pendingResidentsRequest.setCreatedAt(LocalDateTime.now());
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -59,5 +60,9 @@ public class PendingResidentsRequestService {
 
     private boolean residentExistsByPersonalIdNumber(String personalIdNumber) {
         return residentRepository.findByPersonalIdNumber(personalIdNumber).isPresent();
+    }
+
+    private boolean requestExistsByPersonalIdNumber(String personalIdNumber) {
+        return pendingResidentsRequestRepository.findByPersonalIdNumber(personalIdNumber).isPresent();
     }
 }

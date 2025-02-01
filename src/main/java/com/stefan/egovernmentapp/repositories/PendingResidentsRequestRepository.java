@@ -15,4 +15,6 @@ public interface PendingResidentsRequestRepository extends JpaRepository<Pending
     Optional<PendingResidentsRequest> findByIdAndRequestStatus(Integer id, RequestStatus requestStatus);
 
     Optional<PendingResidentsRequest> findByEmailAddressAndRequestStatus(String emailAddress, RequestStatus requestStatus);
+
+    Optional<PendingResidentsRequest> findByPersonalIdNumber(String personalIdNumber);
 }
