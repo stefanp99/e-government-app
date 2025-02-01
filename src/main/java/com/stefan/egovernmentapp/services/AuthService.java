@@ -36,17 +36,15 @@ public class AuthService {
     private String issuer;
 
     public ResponseEntity<String> registerUser(RegisterRequest registerRequest, boolean isResident) {
-        if (isResident)
-            registerRequest.setRole(Role.RESIDENT);
         if (userRepository.findByEmailAddress(registerRequest.getEmailAddress()).isEmpty()) {
-            if (isResident && !registerRequest.getRole().equals(Role.RESIDENT))
-                registerRequest.setRole(Role.RESIDENT);
             User newUser = User.builder()
                     .emailAddress(registerRequest.getEmailAddress())
                     .isUsing2FA(registerRequest.getIsUsing2FA())
                     .password(registerRequest.getPassword())
                     .role(registerRequest.getRole())
                     .build();
+            if (isResident)
+                newUser.setRole(Role.RESIDENT);
             if (registerRequest.getIsUsing2FA()) {
                 String otpAuthURL = add2FAFromUser(newUser);
                 Resident resident = residentService.createResidentIfRoleIsResident(registerRequest.getEmailAddress());
