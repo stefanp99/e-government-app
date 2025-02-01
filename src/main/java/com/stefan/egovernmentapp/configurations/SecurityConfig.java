@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers(GET, "/pending-residents-requests").hasAnyRole(ADMIN.toString(), EMPLOYEE.toString())
                         .requestMatchers(PATCH, "/pending-residents-requests/**").hasAnyRole(ADMIN.toString(), EMPLOYEE.toString())
                         .requestMatchers(POST, "/pending-residents-requests").permitAll()
+                        .requestMatchers(POST, "/complaints").hasAnyRole(ADMIN.toString(), RESIDENT.toString())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
