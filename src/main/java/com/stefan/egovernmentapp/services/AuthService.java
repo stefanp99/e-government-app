@@ -1,10 +1,12 @@
 package com.stefan.egovernmentapp.services;
 
+import com.stefan.egovernmentapp.dtos.requests.LoginRequestDto;
+import com.stefan.egovernmentapp.dtos.requests.RegisterRequestDto;
+import com.stefan.egovernmentapp.models.PendingResidentsRequest;
+import com.stefan.egovernmentapp.models.RequestStatus;
 import com.stefan.egovernmentapp.models.Resident;
 import com.stefan.egovernmentapp.models.Role;
 import com.stefan.egovernmentapp.models.User;
-import com.stefan.egovernmentapp.models.requests.LoginRequest;
-import com.stefan.egovernmentapp.models.requests.RegisterRequest;
 import com.stefan.egovernmentapp.repositories.UserRepository;
 import com.stefan.egovernmentapp.utils.JwtUtil;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
@@ -32,46 +34,59 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final ResidentService residentService;
+    private final PendingResidentsRequestService pendingResidentsRequestService;
+
     @Value("${authenticator.app.name}")
     private String issuer;
 
-    public ResponseEntity<String> registerUser(RegisterRequest registerRequest, boolean isResident) {
-        if (userRepository.findByEmailAddress(registerRequest.getEmailAddress()).isEmpty()) {
+    public ResponseEntity<String> registerUser(RegisterRequestDto registerRequestDto, boolean isResident) {
+        if (userRepository.findByEmailAddress(registerRequestDto.emailAddress()).isEmpty()) {
             User newUser = User.builder()
-                    .emailAddress(registerRequest.getEmailAddress())
-                    .isUsing2FA(registerRequest.getIsUsing2FA())
-                    .password(registerRequest.getPassword())
-                    .role(registerRequest.getRole())
+                    .emailAddress(registerRequestDto.emailAddress())
+                    .isUsing2FA(registerRequestDto.isUsing2FA())
+                    .password(registerRequestDto.password())
+                    .role(registerRequestDto.role())
                     .build();
-            if (isResident)
+            if (isResident) {
+                PendingResidentsRequest pendingResidentsRequest = pendingResidentsRequestService
+                        .getPendingResidentsRequestByEmailAddress(registerRequestDto.emailAddress());
+                if (pendingResidentsRequest == null ||
+                        !pendingResidentsRequest.getEmailAddress().equals(registerRequestDto.emailAddress()) ||
+                        !pendingResidentsRequest.getRequestStatus().equals(RequestStatus.ACCEPTED)) {
+                    return ResponseEntity
+                            .status(NOT_FOUND)
+                            .body(format("User with email address %s not registered by employee or existing already",
+                                    registerRequestDto.emailAddress()));
+                }
                 newUser.setRole(Role.RESIDENT);
-            if (registerRequest.getIsUsing2FA()) {
+            }
+            if (registerRequestDto.isUsing2FA()) {
                 String otpAuthURL = add2FAFromUser(newUser);
-                Resident resident = residentService.createResidentIfRoleIsResident(registerRequest.getEmailAddress());
+                Resident resident = residentService.createResidentIfRoleIsResident(registerRequestDto.emailAddress());
                 return resident == null ?
                         ResponseEntity.status(CREATED).body(format("OTP URL: %s", otpAuthURL)) :
                         ResponseEntity.status(CREATED).body(format("Resident created. OTP URL: %s", otpAuthURL));
             }
             userRepository.save(newUser);
-            Resident resident = residentService.createResidentIfRoleIsResident(registerRequest.getEmailAddress());
+            Resident resident = residentService.createResidentIfRoleIsResident(registerRequestDto.emailAddress());
             return resident == null ?
                     ResponseEntity.status(CREATED).body(format("User added successfully with ID: %d", newUser.getId())) :
                     ResponseEntity.status(CREATED).body(format("User added successfully with ID: %d and resident with ID %d ", newUser.getId(), resident.getId()));
         }
         return ResponseEntity.status(FORBIDDEN)
-                .body(format("User already exists with email address: %s", registerRequest.getEmailAddress()));
+                .body(format("User already exists with email address: %s", registerRequestDto.emailAddress()));
     }
 
-    public ResponseEntity<String> loginUser(LoginRequest loginRequest) {
-        Optional<User> optionalUser = userRepository.findByEmailAddress(loginRequest.getEmailAddress());
+    public ResponseEntity<String> loginUser(LoginRequestDto loginRequestDto) {
+        Optional<User> optionalUser = userRepository.findByEmailAddress(loginRequestDto.emailAddress());
         if (optionalUser.isPresent()) {
             User loggedUser = optionalUser.get();
             if (loggedUser.getIsUsing2FA())
-                return verifyTotp(loggedUser, loginRequest.getTotpCode());
-            return verifyPassword(loggedUser, loginRequest.getPassword());
+                return verifyTotp(loggedUser, loginRequestDto.totpCode());
+            return verifyPassword(loggedUser, loginRequestDto.password());
         }
         return ResponseEntity.status(NOT_FOUND)
-                .body(format("User not found with email address: %s", loginRequest.getEmailAddress()));
+                .body(format("User not found with email address: %s", loginRequestDto.emailAddress()));
     }
 
     public ResponseEntity<String> add2FA(String token) {

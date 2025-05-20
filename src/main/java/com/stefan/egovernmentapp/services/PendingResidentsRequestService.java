@@ -24,7 +24,7 @@ public class PendingResidentsRequestService {
     private final PendingResidentsRequestRepository pendingResidentsRequestRepository;
     private final ResidentRepository residentRepository;
 
-    public ResponseEntity<List<PendingResidentsRequest>> getPendingResidentsRequests() {
+    public ResponseEntity<List<PendingResidentsRequest>> getPendingResidentsRequestsWithStatusPending() {
         return ResponseEntity.ok(pendingResidentsRequestRepository.findAllByRequestStatus(PENDING));
     }
 
@@ -56,6 +56,10 @@ public class PendingResidentsRequestService {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(format("Request with ID %d does not exist or is not pending", requestId));
+    }
+
+    public PendingResidentsRequest getPendingResidentsRequestByEmailAddress(String emailAddress) {
+        return pendingResidentsRequestRepository.findByEmailAddress(emailAddress).orElse(null);
     }
 
     private boolean residentExistsByPersonalIdNumber(String personalIdNumber) {

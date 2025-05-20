@@ -23,7 +23,7 @@ public class PendingResidentsRequestController {
 
     @GetMapping
     public ResponseEntity<List<PendingResidentsRequest>> getPendingResidentsRequests() {
-        return pendingResidentsRequestService.getPendingResidentsRequests();
+        return pendingResidentsRequestService.getPendingResidentsRequestsWithStatusPending();
     }
 
     @PostMapping
@@ -32,7 +32,8 @@ public class PendingResidentsRequestController {
     }
 
     @PatchMapping("{requestId}/{action}")
-    public ResponseEntity<String> approveOrRejectPendingResidentsRequest(@PathVariable Integer requestId, @PathVariable String action) {
+    public ResponseEntity<String> approveOrRejectPendingResidentsRequest(@PathVariable Integer requestId,
+                                                                         @PathVariable String action) {
         return pendingResidentsRequestService.approveOrRejectRequest(requestId, action);
     }
 }

@@ -1,7 +1,7 @@
 package com.stefan.egovernmentapp.controllers;
 
-import com.stefan.egovernmentapp.models.requests.LoginRequest;
-import com.stefan.egovernmentapp.models.requests.RegisterRequest;
+import com.stefan.egovernmentapp.dtos.requests.LoginRequestDto;
+import com.stefan.egovernmentapp.dtos.requests.RegisterRequestDto;
 import com.stefan.egovernmentapp.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,18 +21,18 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("register-resident")
-    public ResponseEntity<String> registerResident(@RequestBody RegisterRequest registerRequest) {
-        return authService.registerUser(registerRequest, true);
+    public ResponseEntity<String> registerResident(@RequestBody RegisterRequestDto registerRequestDto) {
+        return authService.registerUser(registerRequestDto, true);
     }
 
     @PostMapping("register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
-        return authService.registerUser(registerRequest, false);
+    public ResponseEntity<String> register(@RequestBody RegisterRequestDto registerRequestDto) {
+        return authService.registerUser(registerRequestDto, false);
     }
 
     @PostMapping("login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        return authService.loginUser(loginRequest);
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto) {
+        return authService.loginUser(loginRequestDto);
     }
 
     @PutMapping("2fa")

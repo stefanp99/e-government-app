@@ -30,7 +30,6 @@ public class Complaint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String information;
 
     @OneToOne
     @JoinColumn(name = "complaint_type_id")
@@ -45,4 +44,12 @@ public class Complaint {
     @JoinColumn(name = "resident_id", nullable = false)
     @JsonIgnore
     private Resident resident;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id_modified_by")
+    @JsonIgnore
+    private User userModifiedBy;
+
+    private String residentNote;
+    private String employeeNote;
 }
