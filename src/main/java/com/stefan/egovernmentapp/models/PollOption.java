@@ -1,20 +1,18 @@
 package com.stefan.egovernmentapp.models;
 
-import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Builder
 @Data
@@ -22,18 +20,16 @@ import java.util.List;
 @NoArgsConstructor
 
 @Entity
-@Table(name = "residents")
-public class Resident {
+@Table(name = "poll_options")
+public class PollOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String name;
-    private String address;
-    @OneToOne
-    @JoinColumn(referencedColumnName = "id")
-    private User user;
-    private String personalIdNumber;
 
-    @OneToMany(mappedBy = "resident", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Complaint> complaints;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "poll_id", nullable = false)
+    @JsonIgnore
+    private Poll poll;
+
+    private String optionText;
 }

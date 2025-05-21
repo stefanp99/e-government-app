@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 public class Complaint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @OneToOne
     @JoinColumn(name = "complaint_type_id")
