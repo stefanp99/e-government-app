@@ -36,6 +36,8 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/pending-residents-requests").permitAll()
                         .requestMatchers(POST, "/complaints").hasAnyRole(ADMIN.toString(), RESIDENT.toString())
                         .requestMatchers(PATCH, "/complaints/**").hasAnyRole(ADMIN.toString(), EMPLOYEE.toString())
+                        .requestMatchers(GET, "/complaints/resident").hasAnyRole(ADMIN.toString(), RESIDENT.toString())
+                        .requestMatchers(GET, "/complaints/employee").hasAnyRole(ADMIN.toString(), EMPLOYEE.toString())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

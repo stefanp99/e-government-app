@@ -1,6 +1,8 @@
 package com.stefan.egovernmentapp.services;
 
 import com.stefan.egovernmentapp.dtos.requests.ComplaintRequestDto;
+import com.stefan.egovernmentapp.dtos.responses.EmployeeComplaintResponseDto;
+import com.stefan.egovernmentapp.dtos.responses.ResidentComplaintResponseDto;
 import com.stefan.egovernmentapp.models.Complaint;
 import com.stefan.egovernmentapp.models.ComplaintStatus;
 import com.stefan.egovernmentapp.models.Resident;
@@ -13,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -67,4 +71,20 @@ public class ComplaintService {
         return ResponseEntity.ok(String.format("Complaint with ID %d was updated.", complaintId));
     }
 
+    public ResponseEntity<List<ResidentComplaintResponseDto>> findResidentComplaints(String token) {
+        Optional<Resident> optionalResident = jwtUtil.findResidentByToken(token);
+        if (optionalResident.isPresent()) {
+            Resident resident = optionalResident.get();
+            return ResponseEntity.ok(resident.getComplaints().stream()
+                    .map(ResidentComplaintResponseDto::toDto)
+                    .toList());
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
+    }
+
+    public ResponseEntity<List<EmployeeComplaintResponseDto>> findEmployeeComplaints() {
+        return ResponseEntity.ok(complaintRepository.findAll().stream()
+                .map(EmployeeComplaintResponseDto::toDto)
+                .toList());
+    }
 }

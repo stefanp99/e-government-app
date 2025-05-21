@@ -1,9 +1,12 @@
 package com.stefan.egovernmentapp.controllers;
 
 import com.stefan.egovernmentapp.dtos.requests.ComplaintRequestDto;
+import com.stefan.egovernmentapp.dtos.responses.EmployeeComplaintResponseDto;
+import com.stefan.egovernmentapp.dtos.responses.ResidentComplaintResponseDto;
 import com.stefan.egovernmentapp.services.ComplaintService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("complaints")
@@ -29,5 +34,16 @@ public class ComplaintController {
                                                   @PathVariable("complaintId") Integer complaintId,
                                                   @RequestBody ComplaintRequestDto complaintRequestDto) {
         return complaintService.updateComplaint(token, complaintId, complaintRequestDto);
+    }
+
+    @GetMapping("resident")
+    public ResponseEntity<List<ResidentComplaintResponseDto>> getResidentComplaints(
+            @RequestHeader("Authorization") String token) {
+        return complaintService.findResidentComplaints(token);
+    }
+
+    @GetMapping("employee")
+    public ResponseEntity<List<EmployeeComplaintResponseDto>> getEmployeeComplaints() {
+        return complaintService.findEmployeeComplaints();
     }
 }
