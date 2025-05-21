@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/polls").hasAnyRole(ADMIN.toString(), EMPLOYEE.toString())
                         .requestMatchers(PATCH, "/polls/**").hasAnyRole(ADMIN.toString(), EMPLOYEE.toString())
                         .requestMatchers(GET, "/polls/**").hasAnyRole(ADMIN.toString(), RESIDENT.toString(), EMPLOYEE.toString())
+                        .requestMatchers(POST, "/votes").hasAnyRole(ADMIN.toString(), RESIDENT.toString())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
