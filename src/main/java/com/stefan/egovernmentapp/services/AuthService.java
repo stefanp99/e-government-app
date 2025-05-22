@@ -61,10 +61,8 @@ public class AuthService {
             }
             if (registerRequestDto.isUsing2FA()) {
                 String otpAuthURL = add2FAFromUser(newUser);
-                Resident resident = residentService.createResidentIfRoleIsResident(registerRequestDto.emailAddress());
-                return resident == null ?
-                        ResponseEntity.status(CREATED).body(format("OTP URL: %s", otpAuthURL)) :
-                        ResponseEntity.status(CREATED).body(format("Resident created. OTP URL: %s", otpAuthURL));
+                residentService.createResidentIfRoleIsResident(registerRequestDto.emailAddress());
+                return ResponseEntity.status(CREATED).body(otpAuthURL);
             }
             userRepository.save(newUser);
             Resident resident = residentService.createResidentIfRoleIsResident(registerRequestDto.emailAddress());
@@ -121,7 +119,7 @@ public class AuthService {
         user.setSecretKey(secretKey.getKey());
         user.setIsUsing2FA(true);
         userRepository.save(user);
-        return format("User added successfully using totp: %s", otpAuthURL);
+        return otpAuthURL;
     }
 
     private ResponseEntity<String> remove2FAFromUser(User user) {
