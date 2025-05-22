@@ -13,6 +13,7 @@ import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,6 @@ import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RequiredArgsConstructor
@@ -135,7 +135,10 @@ public class AuthService {
     private ResponseEntity<String> verifyPassword(User loggedUser, String requestPassword) {
         if (requestPassword.equals(loggedUser.getPassword())) {
             String token = jwtUtil.generateToken(loggedUser.getEmailAddress(), loggedUser.getRole());
-            return ResponseEntity.status(OK).body(token);
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(token);
         }
         return ResponseEntity.status(UNAUTHORIZED).body("Invalid credentials");
     }
