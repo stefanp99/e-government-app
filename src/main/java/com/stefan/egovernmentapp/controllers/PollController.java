@@ -27,10 +27,9 @@ public class PollController {
         return pollService.addPoll(addPollRequestDto);
     }
 
-    @PatchMapping("{pollId}/{action}")
-    public ResponseEntity<String> startOrEndPoll(@PathVariable("pollId") Integer pollId,
-                                                 @PathVariable("action") String action) {
-        return pollService.startOrEndPoll(pollId, action);
+    @PatchMapping("{pollId}")
+    public ResponseEntity<String> startOrEndPoll(@PathVariable("pollId") Integer pollId) {
+        return pollService.startOrEndPoll(pollId);
     }
 
     @GetMapping("{active}")

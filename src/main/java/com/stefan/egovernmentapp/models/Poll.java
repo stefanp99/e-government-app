@@ -30,9 +30,10 @@ public class Poll {
     private String title;
     private LocalDate creationDate;
     private Boolean active;
+    private LocalDate endDate;
 
     @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PollOption> pollOptions;
-
-    private LocalDate endDate;
+    @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Vote> votes;
 }

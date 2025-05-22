@@ -42,25 +42,19 @@ public class PollService {
         return ResponseEntity.status(HttpStatus.CREATED).body("Poll created");
     }
 
-    public ResponseEntity<String> startOrEndPoll(Integer pollId, String action) {
+    public ResponseEntity<String> startOrEndPoll(Integer pollId) {
         Optional<Poll> optionalPoll = pollRepository.findById(pollId);
         if (optionalPoll.isPresent()) {
             Poll poll = optionalPoll.get();
-            switch (action) {
-                case "start" -> {
-                    poll.setActive(true);
-                    pollRepository.save(poll);
-                    return ResponseEntity.status(HttpStatus.OK).body("Poll started");
-                }
-                case "end" -> {
-                    poll.setActive(false);
-                    poll.setEndDate(LocalDate.now());
-                    pollRepository.save(poll);
-                    return ResponseEntity.status(HttpStatus.OK).body("Poll ended");
-                }
-                default -> {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid action");
-                }
+            if (poll.getActive()) {
+                poll.setActive(false);
+                poll.setEndDate(LocalDate.now());
+                pollRepository.save(poll);
+                return ResponseEntity.status(HttpStatus.OK).body("Poll ended");
+            } else {
+                poll.setActive(true);
+                pollRepository.save(poll);
+                return ResponseEntity.status(HttpStatus.OK).body("Poll started");
             }
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Poll not found");

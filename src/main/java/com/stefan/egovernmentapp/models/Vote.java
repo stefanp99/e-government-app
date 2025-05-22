@@ -7,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +30,8 @@ public class Vote {
     @JsonIgnore
     private Poll poll;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "poll_option_id", nullable = false)
+    @JsonIgnore
     private PollOption pollOption;
 }

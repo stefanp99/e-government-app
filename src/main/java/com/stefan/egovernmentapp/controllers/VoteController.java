@@ -1,9 +1,12 @@
 package com.stefan.egovernmentapp.controllers;
 
 import com.stefan.egovernmentapp.dtos.requests.AddVoteRequestDto;
+import com.stefan.egovernmentapp.dtos.responses.PollResultsResponseDto;
 import com.stefan.egovernmentapp.services.VoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -21,5 +24,10 @@ public class VoteController {
     public ResponseEntity<String> castVote(@RequestHeader("Authorization") String token,
                                            @RequestBody AddVoteRequestDto addVoteRequestDto) {
         return voteService.castVote(token, addVoteRequestDto);
+    }
+
+    @GetMapping("results/{id}")
+    public ResponseEntity<PollResultsResponseDto> getPollResults(@PathVariable Integer id) {
+        return voteService.getPollResults(id);
     }
 }

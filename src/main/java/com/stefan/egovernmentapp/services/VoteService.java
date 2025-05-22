@@ -1,6 +1,8 @@
 package com.stefan.egovernmentapp.services;
 
 import com.stefan.egovernmentapp.dtos.requests.AddVoteRequestDto;
+import com.stefan.egovernmentapp.dtos.responses.PollOptionResultsResponseDto;
+import com.stefan.egovernmentapp.dtos.responses.PollResultsResponseDto;
 import com.stefan.egovernmentapp.models.Poll;
 import com.stefan.egovernmentapp.models.PollOption;
 import com.stefan.egovernmentapp.models.Resident;
@@ -18,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -68,5 +72,35 @@ public class VoteService {
             return ResponseEntity.status(HttpStatus.CREATED).body("Vote added successfully");
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
+    }
+
+    public ResponseEntity<PollResultsResponseDto> getPollResults(Integer pollId) {
+        Optional<Poll> optionalPoll = pollRepository.findById(pollId);
+        if (optionalPoll.isPresent()) {
+            Poll poll = optionalPoll.get();
+            List<PollOptionResultsResponseDto> pollOptionResultsResponseDtoList = new ArrayList<>();
+            if (!poll.getActive() && poll.getEndDate() != null) {
+                List<PollOption> pollOptions = poll.getPollOptions();
+                pollOptions.forEach(option -> pollOptionResultsResponseDtoList.add(PollOptionResultsResponseDto.builder()
+                        .optionId(option.getId())
+                        .optionText(option.getOptionText())
+                        .optionCount(getVoteCount(poll, option))
+                        .build()));
+
+                PollResultsResponseDto pollResultsResponseDto = PollResultsResponseDto.builder()
+                        .id(poll.getId())
+                        .title(poll.getTitle())
+                        .pollOptionResults(pollOptionResultsResponseDtoList)
+                        .build();
+
+                return ResponseEntity.status(HttpStatus.OK).body(pollResultsResponseDto);
+            }
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
+    private Integer getVoteCount(Poll poll, PollOption pollOption) {
+        return voteRepository.findByPollAndPollOption(poll, pollOption).size();
     }
 }
