@@ -3,7 +3,9 @@ package com.stefan.egovernmentapp.controllers;
 import com.stefan.egovernmentapp.dtos.requests.ComplaintRequestDto;
 import com.stefan.egovernmentapp.dtos.responses.EmployeeComplaintResponseDto;
 import com.stefan.egovernmentapp.dtos.responses.ResidentComplaintResponseDto;
+import com.stefan.egovernmentapp.models.ComplaintType;
 import com.stefan.egovernmentapp.services.ComplaintService;
+import com.stefan.egovernmentapp.services.ComplaintTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +24,7 @@ import java.util.List;
 @RestController
 public class ComplaintController {
     private final ComplaintService complaintService;
+    private final ComplaintTypeService complaintTypeService;
 
     @PostMapping
     public ResponseEntity<String> addComplaint(@RequestHeader("Authorization") String token,
@@ -45,5 +48,10 @@ public class ComplaintController {
     @GetMapping("employee")
     public ResponseEntity<List<EmployeeComplaintResponseDto>> getEmployeeComplaints() {
         return complaintService.findEmployeeComplaints();
+    }
+
+    @GetMapping("types")
+    public ResponseEntity<List<ComplaintType>> getComplaintTypes() {
+        return complaintTypeService.findAll();
     }
 }
