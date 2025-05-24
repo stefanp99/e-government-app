@@ -1,6 +1,7 @@
 package com.stefan.egovernmentapp.services;
 
 import com.stefan.egovernmentapp.dtos.requests.ComplaintRequestDto;
+import com.stefan.egovernmentapp.dtos.responses.ComplaintResponseDto;
 import com.stefan.egovernmentapp.dtos.responses.EmployeeComplaintResponseDto;
 import com.stefan.egovernmentapp.dtos.responses.ResidentComplaintResponseDto;
 import com.stefan.egovernmentapp.models.Complaint;
@@ -19,8 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static java.lang.String.format;
-
 @RequiredArgsConstructor
 
 @Service
@@ -29,7 +28,7 @@ public class ComplaintService {
     private final ComplaintRepository complaintRepository;
     private final JwtUtil jwtUtil;
 
-    public ResponseEntity<String> addComplaint(String token, ComplaintRequestDto complaintRequestDto) {
+    public ResponseEntity<ComplaintResponseDto> addComplaint(String token, ComplaintRequestDto complaintRequestDto) {
         Optional<Resident> optionalResident = jwtUtil.findResidentByToken(token);
         if (optionalResident.isPresent()) {
             Resident resident = optionalResident.get();
@@ -42,9 +41,9 @@ public class ComplaintService {
                     .build();
             complaintRepository.save(complaint);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(format("Complaint with ID %d was created.", complaintRepository.save(complaint).getId()));
+                    .body(ComplaintResponseDto.toDto(complaint));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
     public ResponseEntity<String> updateComplaint(String token, Integer complaintId, ComplaintRequestDto complaintRequestDto) {

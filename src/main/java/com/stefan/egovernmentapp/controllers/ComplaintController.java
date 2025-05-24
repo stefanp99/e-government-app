@@ -1,6 +1,7 @@
 package com.stefan.egovernmentapp.controllers;
 
 import com.stefan.egovernmentapp.dtos.requests.ComplaintRequestDto;
+import com.stefan.egovernmentapp.dtos.responses.ComplaintResponseDto;
 import com.stefan.egovernmentapp.dtos.responses.EmployeeComplaintResponseDto;
 import com.stefan.egovernmentapp.dtos.responses.ResidentComplaintResponseDto;
 import com.stefan.egovernmentapp.models.ComplaintType;
@@ -27,8 +28,8 @@ public class ComplaintController {
     private final ComplaintTypeService complaintTypeService;
 
     @PostMapping
-    public ResponseEntity<String> addComplaint(@RequestHeader("Authorization") String token,
-                                               @RequestBody ComplaintRequestDto complaintRequestDto) {
+    public ResponseEntity<ComplaintResponseDto> addComplaint(@RequestHeader("Authorization") String token,
+                                                             @RequestBody ComplaintRequestDto complaintRequestDto) {
         return complaintService.addComplaint(token, complaintRequestDto);
     }
 

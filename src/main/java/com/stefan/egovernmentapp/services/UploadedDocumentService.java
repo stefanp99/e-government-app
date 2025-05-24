@@ -79,6 +79,6 @@ public class UploadedDocumentService {
     }
 
     private boolean isValidFileName(String fileName) {
-        return fileName != null && fileName.matches("^[a-zA-Z0-9._-]+$");
+        return fileName != null && fileName.matches("^[a-zA-Z0-9._\\- ]+$");
     }
 }
