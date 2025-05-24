@@ -73,13 +73,10 @@ public class ComplaintService {
 
     public ResponseEntity<List<ResidentComplaintResponseDto>> findResidentComplaints(String token) {
         Optional<Resident> optionalResident = jwtUtil.findResidentByToken(token);
-        if (optionalResident.isPresent()) {
-            Resident resident = optionalResident.get();
-            return ResponseEntity.ok(resident.getComplaints().stream()
-                    .map(ResidentComplaintResponseDto::toDto)
-                    .toList());
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
+        return optionalResident.map(resident -> ResponseEntity.ok(resident.getComplaints().stream()
+                        .map(ResidentComplaintResponseDto::toDto)
+                        .toList()))
+                .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList()));
     }
 
     public ResponseEntity<List<EmployeeComplaintResponseDto>> findEmployeeComplaints() {
