@@ -71,6 +71,7 @@ public class UploadedDocumentService {
         if (!isValidFileName(fileName)) {
             throw new IOException("Invalid file name");
         }
+        fileName = sanitizeFilename(fileName);
         Path filePath = uploadPath.resolve(fileName).normalize();
 
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
@@ -80,5 +81,15 @@ public class UploadedDocumentService {
 
     private boolean isValidFileName(String fileName) {
         return fileName != null && fileName.matches("^[a-zA-Z0-9._\\- ]+$");
+    }
+
+    private String sanitizeFilename(String fileName) {
+        if (fileName == null) {
+            return null;
+        }
+        String sanitized = fileName.trim().toLowerCase();
+        sanitized = sanitized.replaceAll("\\s+", "-");
+        sanitized = sanitized.replaceAll("[^a-z0-9\\-_.]", "");
+        return sanitized;
     }
 }
