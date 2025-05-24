@@ -50,8 +50,7 @@ public class VoteService {
         Optional<Resident> optionalResident = jwtUtil.findResidentByToken(token);
         if (optionalResident.isPresent()) {
             Resident resident = optionalResident.get();
-            Optional<VoteLog> optionalVoteLog = voteLogRepository.findByResident(resident);
-            if (optionalVoteLog.isPresent()) {
+            if (hasResidentVoted(resident, poll)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Resident already voted");
             }
             Vote vote = Vote.builder()
@@ -98,6 +97,28 @@ public class VoteService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
+    public ResponseEntity<Boolean> hasResidentVoted(String token, Integer pollId) {
+        Optional<Resident> optionalResident = jwtUtil.findResidentByToken(token);
+        if (optionalResident.isPresent()) {
+            Resident resident = optionalResident.get();
+            Optional<Poll> optionalPoll = pollRepository.findById(pollId);
+            if (optionalPoll.isPresent()) {
+                Poll poll = optionalPoll.get();
+                if (hasResidentVoted(resident, poll)) {
+                    return ResponseEntity.status(HttpStatus.OK).body(true);
+                }
+                return ResponseEntity.status(HttpStatus.OK).body(false);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
+
+    private Boolean hasResidentVoted(Resident resident, Poll poll) {
+        Optional<VoteLog> optionalVoteLog = voteLogRepository.findByResidentAndPoll(resident, poll);
+        return optionalVoteLog.isPresent();
     }
 
     private Integer getVoteCount(Poll poll, PollOption pollOption) {

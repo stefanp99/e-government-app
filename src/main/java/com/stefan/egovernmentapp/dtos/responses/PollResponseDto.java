@@ -8,11 +8,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Builder
-public record PollResponseDto(String title,
-                              LocalDate creationDate,
-                              List<PollOptionDto> pollOptions) {
+public record PollResponseDto(
+        Integer id,
+        String title,
+        LocalDate creationDate,
+        List<PollOptionDto> pollOptions) {
     public static PollResponseDto toDto(Poll poll) {
         return PollResponseDto.builder()
+                .id(poll.getId())
                 .title(poll.getTitle())
                 .creationDate(poll.getCreationDate())
                 .pollOptions(poll.getPollOptions().stream()

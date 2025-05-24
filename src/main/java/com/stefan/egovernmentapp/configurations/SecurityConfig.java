@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers(GET, "/polls/**").hasAnyRole(ADMIN.toString(), RESIDENT.toString(), EMPLOYEE.toString())
                         .requestMatchers(POST, "/votes").hasAnyRole(ADMIN.toString(), RESIDENT.toString())
                         .requestMatchers(GET, "/votes/results/**").hasAnyRole(ADMIN.toString(), RESIDENT.toString(), EMPLOYEE.toString())
+                        .requestMatchers(GET, "/votes/resident-has-voted/**").hasAnyRole(ADMIN.toString(), RESIDENT.toString())
                         .requestMatchers(GET, "/residents/current").hasAnyRole(ADMIN.toString(), RESIDENT.toString())
                         .requestMatchers(POST, "/upload-documents/complaints").hasAnyRole(ADMIN.toString(), RESIDENT.toString())
                         .anyRequest().authenticated()

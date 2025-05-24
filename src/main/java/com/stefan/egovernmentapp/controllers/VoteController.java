@@ -30,4 +30,10 @@ public class VoteController {
     public ResponseEntity<PollResultsResponseDto> getPollResults(@PathVariable Integer id) {
         return voteService.getPollResults(id);
     }
+
+    @GetMapping("resident-has-voted/{pollId}")
+    public ResponseEntity<Boolean> hasResidentVoted(@RequestHeader("Authorization") String token,
+                                                    @PathVariable Integer pollId) {
+        return voteService.hasResidentVoted(token, pollId);
+    }
 }

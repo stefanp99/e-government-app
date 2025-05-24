@@ -1,5 +1,6 @@
 package com.stefan.egovernmentapp.repositories;
 
+import com.stefan.egovernmentapp.models.Poll;
 import com.stefan.egovernmentapp.models.Resident;
 import com.stefan.egovernmentapp.models.VoteLog;
 import com.stefan.egovernmentapp.models.embeddables.VoteLogId;
@@ -10,5 +11,5 @@ import java.util.Optional;
 
 @Repository
 public interface VoteLogRepository extends JpaRepository<VoteLog, VoteLogId> {
-    Optional<VoteLog> findByResident(Resident resident);
+    Optional<VoteLog> findByResidentAndPoll(Resident resident, Poll poll);
 }
