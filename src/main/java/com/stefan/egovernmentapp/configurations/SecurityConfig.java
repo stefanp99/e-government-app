@@ -51,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/votes").hasAnyRole(ADMIN.toString(), RESIDENT.toString())
                         .requestMatchers(GET, "/votes/results/**").hasAnyRole(ADMIN.toString(), RESIDENT.toString(), EMPLOYEE.toString())
                         .requestMatchers(GET, "/residents/current").hasAnyRole(ADMIN.toString(), RESIDENT.toString())
+                        .requestMatchers(POST, "/upload-documents/complaints").hasAnyRole(ADMIN.toString(), RESIDENT.toString())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
