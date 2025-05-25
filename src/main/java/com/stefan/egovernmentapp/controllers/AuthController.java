@@ -1,11 +1,13 @@
 package com.stefan.egovernmentapp.controllers;
 
+import com.stefan.egovernmentapp.dtos.UserDto;
 import com.stefan.egovernmentapp.dtos.requests.LoginRequestDto;
 import com.stefan.egovernmentapp.dtos.requests.RegisterRequestDto;
 import com.stefan.egovernmentapp.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,5 +45,10 @@ public class AuthController {
     @DeleteMapping("2fa")
     public ResponseEntity<String> remove2FA(@RequestHeader("Authorization") String token) {
         return authService.remove2FA(token);
+    }
+
+    @GetMapping("current-user")
+    public ResponseEntity<UserDto> getCurrentUser(@RequestHeader("Authorization") String token) {
+        return authService.getCurrentUser(token);
     }
 }

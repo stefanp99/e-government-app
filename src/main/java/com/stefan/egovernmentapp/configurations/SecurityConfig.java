@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/auth/register").hasAnyRole(ADMIN.toString(), EMPLOYEE.toString())
                         .requestMatchers(PUT, "/auth/2fa").hasAnyRole(ADMIN.toString(), RESIDENT.toString(), EMPLOYEE.toString())
                         .requestMatchers(DELETE, "/auth/2fa").hasAnyRole(ADMIN.toString(), RESIDENT.toString(), EMPLOYEE.toString())
+                        .requestMatchers(GET, "/auth/current-user").hasAnyRole(ADMIN.toString(), RESIDENT.toString(), EMPLOYEE.toString())
                         .requestMatchers(GET, "/pending-residents-requests").hasAnyRole(ADMIN.toString(), EMPLOYEE.toString())
                         .requestMatchers(PATCH, "/pending-residents-requests/**").hasAnyRole(ADMIN.toString(), EMPLOYEE.toString())
                         .requestMatchers(POST, "/pending-residents-requests").permitAll()

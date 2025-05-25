@@ -1,5 +1,6 @@
 package com.stefan.egovernmentapp.services;
 
+import com.stefan.egovernmentapp.dtos.UserDto;
 import com.stefan.egovernmentapp.dtos.requests.LoginRequestDto;
 import com.stefan.egovernmentapp.dtos.requests.RegisterRequestDto;
 import com.stefan.egovernmentapp.models.PendingResidentsRequest;
@@ -109,6 +110,12 @@ public class AuthService {
         }
         return ResponseEntity.status(NOT_FOUND)
                 .body("User not found");
+    }
+
+    public ResponseEntity<UserDto> getCurrentUser(String token) {
+        Optional<User> optionalUser = jwtUtil.findUserByToken(token);
+        return optionalUser.map(user -> ResponseEntity.ok(UserDto.toDto(user)))
+                .orElseGet(() -> ResponseEntity.status(UNAUTHORIZED).body(null));
     }
 
     private String add2FAFromUser(User user) {

@@ -25,7 +25,8 @@ public record EmployeeComplaintResponseDto(ComplaintType complaintType,
                 .updatedAt(complaint.getUpdatedAt())
                 .complaintStatus(complaint.getComplaintStatus())
                 .residentDto(ResidentDto.toDto(complaint.getResident()))
-                .userDtoModifiedBy(UserDto.toDto(complaint.getUserModifiedBy()))
+                .userDtoModifiedBy(complaint.getUserModifiedBy() == null ?
+                        null : UserDto.toDto(complaint.getUserModifiedBy()))
                 .residentNote(complaint.getResidentNote())
                 .employeeNote(complaint.getEmployeeNote())
                 .build();
