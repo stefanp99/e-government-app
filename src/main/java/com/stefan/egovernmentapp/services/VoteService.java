@@ -113,7 +113,7 @@ public class VoteService {
                 pollResultsResponseDtoList.add(pollResults);
         });
         return ResponseEntity.ok(pollResultsResponseDtoList.stream()
-                .sorted(Comparator.comparing(PollResultsResponseDto::creationDate).reversed())
+                .sorted(Comparator.comparing(PollResultsResponseDto::endDate).reversed())
                 .toList());
     }
 
@@ -132,7 +132,7 @@ public class VoteService {
             return PollResultsResponseDto.builder()
                     .id(poll.getId())
                     .title(poll.getTitle())
-                    .creationDate(poll.getCreationDate())
+                    .endDate(poll.getEndDate())
                     .pollOptionResults(pollOptionResultsResponseDtoList)
                     .build();
         }

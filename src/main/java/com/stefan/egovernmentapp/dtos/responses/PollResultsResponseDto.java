@@ -8,6 +8,6 @@ import java.util.List;
 @Builder
 public record PollResultsResponseDto(Integer id,
                                      String title,
-                                     LocalDate creationDate,
+                                     LocalDate endDate,
                                      List<PollOptionResultsResponseDto> pollOptionResults) {
 }
