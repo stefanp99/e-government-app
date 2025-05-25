@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,22 +78,9 @@ public class VoteService {
         Optional<Poll> optionalPoll = pollRepository.findById(pollId);
         if (optionalPoll.isPresent()) {
             Poll poll = optionalPoll.get();
-            List<PollOptionResultsResponseDto> pollOptionResultsResponseDtoList = new ArrayList<>();
-            if (!poll.getActive() && poll.getEndDate() != null) {
-                List<PollOption> pollOptions = poll.getPollOptions();
-                pollOptions.forEach(option -> pollOptionResultsResponseDtoList.add(PollOptionResultsResponseDto.builder()
-                        .optionId(option.getId())
-                        .optionText(option.getOptionText())
-                        .optionCount(getVoteCount(poll, option))
-                        .build()));
-
-                PollResultsResponseDto pollResultsResponseDto = PollResultsResponseDto.builder()
-                        .id(poll.getId())
-                        .title(poll.getTitle())
-                        .pollOptionResults(pollOptionResultsResponseDtoList)
-                        .build();
-
-                return ResponseEntity.status(HttpStatus.OK).body(pollResultsResponseDto);
+            PollResultsResponseDto pollResultsResponseDto = getPollResults(poll);
+            if (pollResultsResponseDto != null) {
+                return ResponseEntity.ok(pollResultsResponseDto);
             }
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
@@ -116,9 +104,39 @@ public class VoteService {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
+    public ResponseEntity<List<PollResultsResponseDto>> getAllPollResults() {
+        List<Poll> pollList = pollRepository.findAll();
+        List<PollResultsResponseDto> pollResultsResponseDtoList = new ArrayList<>();
+        pollList.forEach(poll -> {
+            PollResultsResponseDto pollResults = getPollResults(poll);
+            if (pollResults != null)
+                pollResultsResponseDtoList.add(pollResults);
+        });
+        return ResponseEntity.ok(pollResultsResponseDtoList.stream()
+                .sorted(Comparator.comparing(PollResultsResponseDto::creationDate).reversed())
+                .toList());
+    }
+
     private Boolean hasResidentVoted(Resident resident, Poll poll) {
         Optional<VoteLog> optionalVoteLog = voteLogRepository.findByResidentAndPoll(resident, poll);
         return optionalVoteLog.isPresent();
+    }
+
+    private PollResultsResponseDto getPollResults(Poll poll) {
+        List<PollOptionResultsResponseDto> pollOptionResultsResponseDtoList = new ArrayList<>();
+        if (!poll.getActive() && poll.getEndDate() != null) {
+            List<PollOption> pollOptions = poll.getPollOptions();
+            pollOptions.forEach(option -> pollOptionResultsResponseDtoList.add(
+                    PollOptionResultsResponseDto.toDto(option, getVoteCount(poll, option))));
+
+            return PollResultsResponseDto.builder()
+                    .id(poll.getId())
+                    .title(poll.getTitle())
+                    .creationDate(poll.getCreationDate())
+                    .pollOptionResults(pollOptionResultsResponseDtoList)
+                    .build();
+        }
+        return null;
     }
 
     private Integer getVoteCount(Poll poll, PollOption pollOption) {

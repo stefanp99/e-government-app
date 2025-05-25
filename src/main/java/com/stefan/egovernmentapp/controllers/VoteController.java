@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 
 @RestController
@@ -29,6 +31,11 @@ public class VoteController {
     @GetMapping("results/{id}")
     public ResponseEntity<PollResultsResponseDto> getPollResults(@PathVariable Integer id) {
         return voteService.getPollResults(id);
+    }
+
+    @GetMapping("results")
+    public ResponseEntity<List<PollResultsResponseDto>> getPollResults() {
+        return voteService.getAllPollResults();
     }
 
     @GetMapping("resident-has-voted/{pollId}")
