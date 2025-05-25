@@ -7,12 +7,14 @@ import lombok.Builder;
 @Builder
 public record UserDto(Integer id,
                       String emailAddress,
-                      Role role) {
+                      Role role,
+                      Boolean isUsing2FA) {
     public static UserDto toDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
                 .emailAddress(user.getEmailAddress())
                 .role(user.getRole())
+                .isUsing2FA(user.getIsUsing2FA())
                 .build();
     }
 }
