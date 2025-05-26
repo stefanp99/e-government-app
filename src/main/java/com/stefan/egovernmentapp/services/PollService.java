@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -70,6 +71,7 @@ public class PollService {
     public ResponseEntity<List<PollResponseDto>> getAllPolls() {
         return ResponseEntity.ok(pollRepository.findAll().stream()
                 .map(PollResponseDto::toDto)
+                .sorted(Comparator.comparing(PollResponseDto::creationDate).reversed())
                 .toList());
     }
 

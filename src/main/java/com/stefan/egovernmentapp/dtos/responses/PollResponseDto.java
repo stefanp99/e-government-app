@@ -12,6 +12,7 @@ public record PollResponseDto(
         Integer id,
         String title,
         LocalDate creationDate,
+        LocalDate endDate,
         Boolean active,
         List<PollOptionDto> pollOptions) {
     public static PollResponseDto toDto(Poll poll) {
@@ -19,6 +20,7 @@ public record PollResponseDto(
                 .id(poll.getId())
                 .title(poll.getTitle())
                 .creationDate(poll.getCreationDate())
+                .endDate(poll.getEndDate())
                 .active(poll.getActive())
                 .pollOptions(poll.getPollOptions().stream()
                         .map(PollOptionDto::toDto)
