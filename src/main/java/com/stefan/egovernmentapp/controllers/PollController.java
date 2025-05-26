@@ -36,4 +36,9 @@ public class PollController {
     public ResponseEntity<List<PollResponseDto>> getPollsByActive(@PathVariable("active") Boolean active) {
         return pollService.getPollsByActive(active);
     }
+
+    @GetMapping
+    public ResponseEntity<List<PollResponseDto>> getAllPolls() {
+        return pollService.getAllPolls();
+    }
 }

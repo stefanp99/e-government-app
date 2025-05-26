@@ -66,4 +66,10 @@ public class PollService {
                 .map(PollResponseDto::toDto)
                 .toList());
     }
+
+    public ResponseEntity<List<PollResponseDto>> getAllPolls() {
+        return ResponseEntity.ok(pollRepository.findAll().stream()
+                .map(PollResponseDto::toDto)
+                .toList());
+    }
 }
