@@ -1,6 +1,6 @@
 package com.stefan.egovernmentapp.controllers;
 
-import com.stefan.egovernmentapp.dtos.requests.AddPollRequestDto;
+import com.stefan.egovernmentapp.dtos.requests.PollRequestDto;
 import com.stefan.egovernmentapp.dtos.responses.PollResponseDto;
 import com.stefan.egovernmentapp.services.PollService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,8 +24,8 @@ public class PollController {
     private final PollService pollService;
 
     @PostMapping
-    public ResponseEntity<String> addPoll(@RequestBody AddPollRequestDto addPollRequestDto) {
-        return pollService.addPoll(addPollRequestDto);
+    public ResponseEntity<String> addPoll(@RequestBody PollRequestDto pollRequestDto) {
+        return pollService.addPoll(pollRequestDto);
     }
 
     @PatchMapping("{pollId}")
@@ -40,5 +41,11 @@ public class PollController {
     @GetMapping
     public ResponseEntity<List<PollResponseDto>> getAllPolls() {
         return pollService.getAllPolls();
+    }
+
+    @PutMapping("{pollId}")
+    public ResponseEntity<String> editPoll(@PathVariable("pollId") Integer pollId,
+                                           @RequestBody PollRequestDto pollRequestDto) {
+        return pollService.editPoll(pollId, pollRequestDto);
     }
 }

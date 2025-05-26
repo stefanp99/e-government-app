@@ -1,6 +1,6 @@
 package com.stefan.egovernmentapp.services;
 
-import com.stefan.egovernmentapp.dtos.requests.AddPollRequestDto;
+import com.stefan.egovernmentapp.dtos.requests.PollRequestDto;
 import com.stefan.egovernmentapp.dtos.responses.PollResponseDto;
 import com.stefan.egovernmentapp.models.Poll;
 import com.stefan.egovernmentapp.models.PollOption;
@@ -21,14 +21,14 @@ import java.util.stream.Stream;
 public class PollService {
     private final PollRepository pollRepository;
 
-    public ResponseEntity<String> addPoll(AddPollRequestDto addPollRequestDto) {
+    public ResponseEntity<String> addPoll(PollRequestDto pollRequestDto) {
         Poll poll = Poll.builder()
-                .title(addPollRequestDto.title())
+                .title(pollRequestDto.title())
                 .creationDate(LocalDate.now())
                 .active(false)
                 .build();
 
-        List<PollOption> pollOptions = Stream.of(addPollRequestDto.pollOptions().split(","))
+        List<PollOption> pollOptions = Stream.of(pollRequestDto.pollOptions().split(","))
                 .map(String::trim)
                 .map(optionText -> PollOption.builder()
                         .optionText(optionText)
@@ -71,5 +71,27 @@ public class PollService {
         return ResponseEntity.ok(pollRepository.findAll().stream()
                 .map(PollResponseDto::toDto)
                 .toList());
+    }
+
+    public ResponseEntity<String> editPoll(Integer pollId, PollRequestDto pollRequestDto) {
+        Optional<Poll> optionalPoll = pollRepository.findById(pollId);
+        return optionalPoll.map(poll -> {
+                    poll.setTitle(pollRequestDto.title());
+
+                    poll.getPollOptions().clear();
+
+                    List<PollOption> pollOptionList = Stream.of(pollRequestDto.pollOptions().split(","))
+                            .map(String::trim)
+                            .map(optionText -> PollOption.builder()
+                                    .optionText(optionText)
+                                    .poll(poll)
+                                    .build())
+                            .toList();
+
+                    poll.getPollOptions().addAll(pollOptionList);
+                    pollRepository.save(poll);
+                    return ResponseEntity.status(HttpStatus.OK).body("Poll edited");
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Poll not found"));
     }
 }
