@@ -15,6 +15,8 @@ import java.util.Optional;
 import static com.stefan.egovernmentapp.models.RequestStatus.ACCEPTED;
 import static com.stefan.egovernmentapp.models.RequestStatus.PENDING;
 import static com.stefan.egovernmentapp.models.RequestStatus.REJECTED;
+import static com.stefan.egovernmentapp.utils.EmailUtil.BODY_PENDING_RESIDENT_REQUEST;
+import static com.stefan.egovernmentapp.utils.EmailUtil.SUBJECT_PENDING_RESIDENT_REQUEST;
 import static java.lang.String.format;
 
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ import static java.lang.String.format;
 public class PendingResidentsRequestService {
     private final PendingResidentsRequestRepository pendingResidentsRequestRepository;
     private final ResidentRepository residentRepository;
+    private final EmailService emailService;
 
     public ResponseEntity<List<PendingResidentsRequest>> getPendingResidentsRequestsWithStatusPending() {
         return ResponseEntity.ok(pendingResidentsRequestRepository.findAllByRequestStatus(PENDING));
@@ -52,6 +55,11 @@ public class PendingResidentsRequestService {
             else
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Action not recognized");
             pendingResidentsRequestRepository.save(pendingResidentsRequest);
+
+            emailService.sendSimpleEmail(pendingResidentsRequest.getEmailAddress(),
+                    SUBJECT_PENDING_RESIDENT_REQUEST,
+                    String.format(BODY_PENDING_RESIDENT_REQUEST, action + "d"));
+
             return ResponseEntity.status(HttpStatus.OK).body(format("Request was modified with action %s", action));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND)

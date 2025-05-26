@@ -20,6 +20,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.stefan.egovernmentapp.utils.EmailUtil.BODY_COMPLAINT_RECEIVED;
+import static com.stefan.egovernmentapp.utils.EmailUtil.BODY_COMPLAINT_STATUS_CHANGED;
+import static com.stefan.egovernmentapp.utils.EmailUtil.SUBJECT_COMPLAINT_RECEIVED;
+import static com.stefan.egovernmentapp.utils.EmailUtil.SUBJECT_COMPLAINT_STATUS_CHANGED;
+
 @RequiredArgsConstructor
 
 @Service
@@ -27,6 +32,7 @@ public class ComplaintService {
     private final ComplaintTypeService complaintTypeService;
     private final ComplaintRepository complaintRepository;
     private final JwtUtil jwtUtil;
+    private final EmailService emailService;
 
     public ResponseEntity<ComplaintResponseDto> addComplaint(String token, ComplaintRequestDto complaintRequestDto) {
         Optional<Resident> optionalResident = jwtUtil.findResidentByToken(token);
@@ -39,7 +45,13 @@ public class ComplaintService {
                     .resident(resident)
                     .residentNote(complaintRequestDto.note())
                     .build();
-            complaintRepository.save(complaint);
+            Complaint createdComplaint = complaintRepository.save(complaint);
+
+            emailService.sendSimpleEmail(resident.getUser().getEmailAddress(),
+                    String.format(SUBJECT_COMPLAINT_RECEIVED, createdComplaint.getId()),
+                    String.format(BODY_COMPLAINT_RECEIVED,
+                            createdComplaint.getComplaintType().getTypeName(), createdComplaint.getResidentNote()));
+
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(ComplaintResponseDto.toDto(complaint));
         }
@@ -66,6 +78,11 @@ public class ComplaintService {
         complaint.setUserModifiedBy(user);
 
         complaintRepository.save(complaint);
+
+        emailService.sendSimpleEmail(complaint.getResident().getUser().getEmailAddress(),
+                String.format(SUBJECT_COMPLAINT_STATUS_CHANGED, complaint.getId()),
+                String.format(BODY_COMPLAINT_STATUS_CHANGED,
+                        complaint.getComplaintStatus().toString(), complaint.getEmployeeNote()));
 
         return ResponseEntity.ok(String.format("Complaint with ID %d was updated.", complaintId));
     }
