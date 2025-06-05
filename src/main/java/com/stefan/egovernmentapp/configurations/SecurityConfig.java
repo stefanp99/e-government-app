@@ -1,6 +1,7 @@
 package com.stefan.egovernmentapp.configurations;
 
 import com.stefan.egovernmentapp.security_filters.JwtFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +19,7 @@ import java.util.List;
 import static com.stefan.egovernmentapp.models.Role.ADMIN;
 import static com.stefan.egovernmentapp.models.Role.EMPLOYEE;
 import static com.stefan.egovernmentapp.models.Role.RESIDENT;
+import static java.lang.String.format;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PATCH;
@@ -27,6 +29,15 @@ import static org.springframework.http.HttpMethod.PUT;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    @Value("${client_protocol}")
+    private String clientProtocol;
+
+    @Value("${client_address}")
+    private String clientAddress;
+
+    @Value("${client_port}")
+    private String clientPort;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
         return http
@@ -67,7 +78,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurer() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        config.setAllowedOrigins(List.of(format("%s://%s:%s", clientProtocol, clientAddress, clientPort)));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
