@@ -127,7 +127,7 @@ public class VoteService {
         if (!poll.getActive() && poll.getEndDate() != null) {
             List<PollOption> pollOptions = poll.getPollOptions();
             pollOptions.forEach(option -> pollOptionResultsResponseDtoList.add(
-                    PollOptionResultsResponseDto.toDto(option, getVoteCount(poll, option))));
+                    PollOptionResultsResponseDto.toDto(option, option.getVotes().size())));
 
             return PollResultsResponseDto.builder()
                     .id(poll.getId())
@@ -137,9 +137,5 @@ public class VoteService {
                     .build();
         }
         return null;
-    }
-
-    private Integer getVoteCount(Poll poll, PollOption pollOption) {
-        return voteRepository.findByPollAndPollOption(poll, pollOption).size();
     }
 }
